@@ -3,8 +3,10 @@ import 'package:get/get.dart';
 import 'package:hamondemo/utils.dart';
 import 'package:hamondemo/view/classroom/classroom_details.dart';
 import 'package:hamondemo/view/registration/registration_details.dart';
-import 'package:hamondemo/view/student/student_page.dart';
+import 'package:hamondemo/view/common_list_page.dart';
 import 'package:hamondemo/view/subject/subject_page.dart';
+
+import '../controller/getcontroller.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -14,6 +16,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  final Controller controller = Get.put(Controller());
   bool uitoogle = true;
   List uilist = [
     {
@@ -65,12 +68,8 @@ class _HomepageState extends State<Homepage> {
                       ),
                     ],
                   ),
-                  ElevatedButton(
-                      style: const ButtonStyle(
-                          elevation: WidgetStatePropertyAll(0),
-                          backgroundColor:
-                              WidgetStatePropertyAll(Colors.transparent)),
-                      onPressed: () {
+                  InkWell(
+                      onTap: () {
                         setState(() {
                           uitoogle = !uitoogle;
                         });
@@ -101,13 +100,16 @@ class _HomepageState extends State<Homepage> {
                             onTap: () {
                               switch (index) {
                                 case 0:
-                                  Get.to(() => const StudentPage());
+                                  Get.to(() => const CommonListPage(
+                                      pagetype: "student"));
                                   break;
                                 case 1:
-                                  Get.to(() => const SubjectPage());
+                                  Get.to(() => const CommonListPage(
+                                      pagetype: "subject"));
                                   break;
                                 case 2:
-                                  Get.to(() => const ClassroomDetails());
+                                  Get.to(() => const CommonListPage(
+                                      pagetype: "classroom"));
                                   break;
                                 case 3:
                                   Get.to(() => const RegistrationDetails());
