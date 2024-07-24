@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 class GetStudentList {
   int? age;
   String? email;
@@ -61,13 +63,8 @@ class GetClassroomList {
   String? layout;
   String? name;
   int? size;
-  String? subject;
-  GetClassroomList(
-      {required this.id,
-      required this.layout,
-      required this.name,
-      required this.size,
-      this.subject});
+  var subject;
+  GetClassroomList({this.id, this.layout, this.name, this.size, this.subject});
 
   GetClassroomList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -87,3 +84,26 @@ class GetClassroomList {
     return data;
   }
 }
+
+class GetRegistrationList {
+  int? id;
+  int? student;
+  int? subject;
+
+  GetRegistrationList({this.id, this.student, this.subject});
+
+  GetRegistrationList.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    student = json['student'];
+    subject = json['subject'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['student'] = this.student;
+    data['subject'] = this.subject;
+    return data;
+  }
+}
+

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hamondemo/utils.dart';
-import 'package:hamondemo/view/classroom/classroom_details.dart';
-import 'package:hamondemo/view/registration/registration_details.dart';
+
+
 import 'package:hamondemo/view/common_list_page.dart';
-import 'package:hamondemo/view/subject/subject_page.dart';
 
 import '../controller/getcontroller.dart';
+import 'registration/registration.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -112,7 +112,7 @@ class _HomepageState extends State<Homepage> {
                                       pagetype: "classroom"));
                                   break;
                                 case 3:
-                                  Get.to(() => const RegistrationDetails());
+                                  Get.to(() => const Registration());
                                   break;
                                 default:
                               }

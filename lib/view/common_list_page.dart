@@ -1,14 +1,26 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hamondemo/models/apicallspage.dart';
 import 'package:hamondemo/view/common_details_page.dart';
+import 'package:hamondemo/view/registration/new_registration_page.dart';
 
+import '../controller/getcontroller.dart';
 import 'classroom/classroom_details.dart';
 
 class CommonListPage extends StatefulWidget {
-  // ignore: prefer_typing_uninitialized_variables
   final pagetype;
-  const CommonListPage({Key? key, required this.pagetype}) : super(key: key);
+  final fromclassroompage;
+  final fromregpage;
+  final classroomid;
+  const CommonListPage(
+      {Key? key,
+      required this.pagetype,
+      this.classroomid,
+      this.fromclassroompage,
+      this.fromregpage})
+      : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -16,6 +28,7 @@ class CommonListPage extends StatefulWidget {
 }
 
 class _CommonListPageState extends State<CommonListPage> {
+  final Controller controller = Get.find();
   Future? futuredata;
   @override
   void initState() {
@@ -75,11 +88,56 @@ class _CommonListPageState extends State<CommonListPage> {
                           itemCount: snapshot.data.length,
                           itemBuilder: (BuildContext context, int index) {
                             return InkWell(
-                              onTap: () {
+                              onTap: () async {
                                 if (widget.pagetype == "classroom") {
                                   Get.to(() => ClassroomDetails(
                                         classroomid: snapshot.data[index].id,
                                       ));
+                                } else if (widget.pagetype == "subject" &&
+                                    widget.fromclassroompage != null) {
+                                  var result =
+                                      await servercall.postsubjecttocalssroom(
+                                          widget.classroomid,
+                                          snapshot.data[index].id);
+                                  if (result == "success") {
+                                    Get.off(() => ClassroomDetails(
+                                        classroomid: widget.classroomid));
+                                    const snackBar = SnackBar(
+                                      content: Text(
+                                        'Subject Updated',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Color.fromRGBO(
+                                                15, 171, 118, 1)),
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      margin: EdgeInsets.all(25),
+                                      backgroundColor:
+                                          Color.fromRGBO(170, 201, 191, 1),
+                                    );
+
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  }
+                                } else if (widget.pagetype == "student" &&
+                                    widget.fromregpage != null) {
+                                  controller.registrationstudentmap = [];
+                                  controller.registrationstudentmap.add({
+                                    "studentid": snapshot.data[index].id,
+                                    "studentname": snapshot.data[index].name
+                                  });
+
+                                  Get.off(() => const NewRegistrationPage());
+                                } else if (widget.pagetype == "subject" &&
+                                    widget.fromregpage != null) {
+                                  controller.registrationsubjectmap = [];
+                                  controller.registrationsubjectmap.add({
+                                    "subjectid": snapshot.data[index].id,
+                                    "subjectname": snapshot.data[index].name
+                                  });
+                                  print(controller.registrationsubjectmap);
+
+                                  Get.off(() => const NewRegistrationPage());
                                 } else {
                                   Get.to(() => CommonDetailsPage(
                                         pagedetailstype: widget.pagetype,

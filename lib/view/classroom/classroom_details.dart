@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hamondemo/models/apicallspage.dart';
+import 'package:hamondemo/view/common_list_page.dart';
 
 class ClassroomDetails extends StatefulWidget {
   final classroomid;
@@ -13,6 +15,7 @@ class ClassroomDetails extends StatefulWidget {
 class _ClassroomDetailsState extends State<ClassroomDetails> {
   int left = 0, right = 0;
   Future? classroomdata;
+  var subjectdata;
   @override
   void initState() {
     super.initState();
@@ -20,13 +23,23 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
   }
 
   initfunction() async {
+    var tempsubjectdata;
     var tempdata = await servercall.getclassroomlistwithID(widget.classroomid);
+    if (tempdata.subject != "") {
+      tempsubjectdata = await servercall.getsubjectlistwithID(tempdata.subject);
+    }
     if (tempdata.layout == "conference") {
       setState(() {
         left = (tempdata.size / 2).ceil();
         right = tempdata.size - left;
+        subjectdata = tempsubjectdata;
+      });
+    } else {
+      setState(() {
+        subjectdata = tempsubjectdata;
       });
     }
+
     print("$left $right");
     return tempdata;
   }
@@ -65,11 +78,26 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                               snapshot.data.subject == ""
                                   ? const Text("Add Subject",
                                       style: TextStyle(fontSize: 17))
-                                  : const Column(
-                                      children: [],
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(subjectdata.name,
+                                            style:
+                                                const TextStyle(fontSize: 17)),
+                                        Text(subjectdata.teacher,
+                                            style:
+                                                const TextStyle(fontSize: 13))
+                                      ],
                                     ),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Get.off(() => CommonListPage(
+                                        pagetype: "subject",
+                                        fromclassroompage: true,
+                                        classroomid: snapshot.data.id,
+                                      ));
+                                },
                                 child: Container(
                                   decoration: BoxDecoration(
                                       color: const Color.fromRGBO(
@@ -78,9 +106,13 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 10, horizontal: 30),
-                                    child: Text(snapshot.data.subject == ""
-                                        ? "Add"
-                                        : "Change"),
+                                    child: Text(
+                                        snapshot.data.subject == ""
+                                            ? "Add"
+                                            : "Change",
+                                        style: const TextStyle(
+                                            color: Color.fromRGBO(
+                                                15, 171, 118, 1))),
                                   ),
                                 ),
                               )
@@ -136,18 +168,19 @@ class _ClassroomDetailsState extends State<ClassroomDetails> {
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 4,
-                                          mainAxisSpacing: 30,
-                                          crossAxisSpacing: 15,
-                                          childAspectRatio:
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  ((MediaQuery.of(context)
-                                                          .size
-                                                          .height /
-                                                      1.8))),
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 4,
+                                    mainAxisSpacing: 20,
+                                    crossAxisSpacing: 15,
+                                    // childAspectRatio:
+                                    //     MediaQuery.of(context)
+                                    //             .size
+                                    //             .width /
+                                    //         ((MediaQuery.of(context)
+                                    //                 .size
+                                    //                 .height /
+                                    //             1.8))
+                                  ),
                                   itemCount: snapshot.data.size,
                                   itemBuilder:
                                       (BuildContext context, int index) {
